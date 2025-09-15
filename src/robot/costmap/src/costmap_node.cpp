@@ -12,7 +12,6 @@ CostmapNode::CostmapNode() : Node("costmap"), costmap_(robot::CostmapCore(this->
 void CostmapNode::lidarCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
   constexpr int WIDTH = 300, HEIGHT = 300;
   constexpr double RES = 0.1;
-  constexpr double OBSTACLE_THRESHOLD = 1.0;
   constexpr int8_t MAX_COST = 100;
   constexpr double INFLATION_RADIUS = 1.0;
 
@@ -30,16 +29,14 @@ void CostmapNode::lidarCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg
 
     if (x_coord < 0 || x_coord >= WIDTH || y_coord < 0 || y_coord >= HEIGHT) continue;
     
-    if (msg->ranges[i] < OBSTACLE_THRESHOLD) {
-      costmap[x_coord][y_coord] = MAX_COST;
-      for (int dx = -INFLATION_RADIUS / RES; dx <= INFLATION_RADIUS / RES; dx++) {
-        for (int dy = -INFLATION_RADIUS / RES; dy <= INFLATION_RADIUS / RES; dy++) {
-          if (x_coord + dx < 0 || x_coord + dx >= WIDTH || y_coord + dy < 0 || y_coord + dy >= HEIGHT) continue;
+    costmap[x_coord][y_coord] = MAX_COST;
+    for (int dx = -INFLATION_RADIUS / RES; dx <= INFLATION_RADIUS / RES; dx++) {
+      for (int dy = -INFLATION_RADIUS / RES; dy <= INFLATION_RADIUS / RES; dy++) {
+        if (x_coord + dx < 0 || x_coord + dx >= WIDTH || y_coord + dy < 0 || y_coord + dy >= HEIGHT) continue;
 
-          double dist = sqrt(dx * dx + dy * dy) * RES;
-          if (dist > INFLATION_RADIUS) continue;
-          costmap[x_coord + dx][y_coord + dy] = std::max(static_cast<int>(costmap[x_coord + dx][y_coord + dy]), static_cast<int>(static_cast<int8_t>(MAX_COST * (1 - std::min(1.0, dist / INFLATION_RADIUS)))));
-        }
+        double dist = sqrt(dx * dx + dy * dy) * RES;
+        if (dist > INFLATION_RADIUS) continue;
+        costmap[x_coord + dx][y_coord + dy] = std::max(static_cast<int>(costmap[x_coord + dx][y_coord + dy]), static_cast<int>(static_cast<int8_t>(MAX_COST * (1 - std::min(1.0, dist / INFLATION_RADIUS)))));
       }
     }
   }
