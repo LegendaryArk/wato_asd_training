@@ -17,12 +17,17 @@ MapMemoryNode::MapMemoryNode() : Node("map_memory"), map_memory_(robot::MapMemor
   prev_x_ = 0;
   prev_y_ = 0;
 
+  global_map_.header.stamp = this->now();
+  global_map_.header.frame_id = "sim_world";
   global_map_.info.resolution = MAP_RES;
   global_map_.info.width = MAP_WIDTH;
   global_map_.info.height = MAP_HEIGHT;
   global_map_.info.origin.position.x = -MAP_WIDTH * MAP_RES / 2.0;
   global_map_.info.origin.position.y = -MAP_HEIGHT * MAP_RES / 2.0;
   global_map_.data.assign(MAP_WIDTH * MAP_HEIGHT, 0);
+
+  updateMap();
+  map_pub_->publish(global_map_);
 }
 
 void MapMemoryNode::costmapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
@@ -55,7 +60,6 @@ void MapMemoryNode::timerCallback() {
 
   updateMap();
   global_map_.header.stamp = this->now();
-  global_map_.header.frame_id = "sim_world";
   map_pub_->publish(global_map_);
 
   update_map_ = false;
