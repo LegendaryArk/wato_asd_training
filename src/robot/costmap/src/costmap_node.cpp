@@ -51,17 +51,11 @@ void CostmapNode::lidarCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg
   occupancy_grid.info.origin.position.y = -15;
 
   occupancy_grid.data.resize(WIDTH * HEIGHT);
-  for (int i = 0; i < WIDTH; i++) {
-    for (int j = 0; j < HEIGHT; j++) {
-      occupancy_grid.data[j * WIDTH + i] = costmap[i][j];
+  for (int y = 0; y < HEIGHT; y++) {
+    for (int x = 0; x < WIDTH; x++) {
+      occupancy_grid.data[y * WIDTH + x] = costmap[x][y];
     }
   }
-  
-  // int non_zero_count = 0;
-  // for (int i = 0; i < WIDTH * HEIGHT; i++) {
-  //     if (occupancy_grid.data[i] != 0) non_zero_count++;
-  // }
-  // RCLCPP_INFO(this->get_logger(), "Costmap has %d non-zero cells", non_zero_count);
 
   costmap_pub_->publish(occupancy_grid);
 }
