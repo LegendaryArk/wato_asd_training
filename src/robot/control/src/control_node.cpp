@@ -21,16 +21,13 @@ void ControlNode::controlLoop() {
     cmd_pub_->publish(geometry_msgs::msg::Twist());
     return;
   }
-
   auto lookahead_point = findLookaheadPoint();
-  if (!lookahead_point.has_value()) {
-    if (dist < ld_) {
-      lookahead_point = current_path_->poses.back();
-    } else {
-      RCLCPP_WARN(this->get_logger(), "No valid lookahead point found.");
-      cmd_pub_->publish(geometry_msgs::msg::Twist());
-      return;
-    }
+  if (dist < ld_) {
+    lookahead_point = current_path_->poses.back();
+  } else if (!lookahead_point.has_value()) {
+    RCLCPP_WARN(this->get_logger(), "No valid lookahead point found.");
+    cmd_pub_->publish(geometry_msgs::msg::Twist());
+    return;
   }
 
   auto cmd = computeVel(lookahead_point.value());
@@ -58,10 +55,10 @@ geometry_msgs::msg::Twist ControlNode::computeVel(const geometry_msgs::msg::Pose
   while (angle_err > M_PI) angle_err -= 2 * M_PI;
   while (angle_err < -M_PI) angle_err += 2 * M_PI;
 
-  double dist = computeDist(odom_->pose.pose.position, tgt.pose.position);
+  double dist = computeDist(odom_->pose.pose.position, current_path_->poses.back().pose.position);
   geometry_msgs::msg::Twist cmd;
-  cmd.linear.x = std::min(linear_vel_, 1.5 * dist);
-  cmd.angular.z = dist > 0.5 ? 1.5 * angle_err : 0.0;
+  cmd.linear.x = std::min(linear_vel_, linear_kp * dist);
+  cmd.angular.z = tgt == current_path_->poses.back() ? 0.0 : angular_kp * angle_err;
   return cmd;
 }
 

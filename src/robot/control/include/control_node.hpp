@@ -22,10 +22,12 @@ class ControlNode : public rclcpp::Node {
     nav_msgs::msg::Path::SharedPtr current_path_;
     nav_msgs::msg::Odometry::SharedPtr odom_;
 
-    static constexpr double ld_ = 0.8;
+    static constexpr double ld_ = 0.5;
     static constexpr double goal_tolerance_ = 0.1;
     static constexpr double linear_vel_ = 1.0;
     static constexpr int dt = 100;
+    static constexpr double linear_kp = 1.5;
+    static constexpr double angular_kp = 0.8;
 
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_sub_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;

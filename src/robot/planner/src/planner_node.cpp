@@ -39,7 +39,7 @@ void PlannerNode::timerCallback() {
       RCLCPP_INFO(this->get_logger(), "Goal Reached!");
       state_ = State::WAITING_FOR_GOAL;
     } else {
-      RCLCPP_INFO(this->get_logger(), "Replanning path...");
+      // RCLCPP_INFO(this->get_logger(), "Replanning path...");
       planPath();
     }
   }
@@ -96,7 +96,6 @@ void PlannerNode::planPath() {
     pq.pop();
 
     if (idx == goal_idx) {
-      RCLCPP_INFO(this->get_logger(), "Goal reached in A* search!");
       reconstructPath(came_from, idx, path_cells);
       break;
     }
@@ -109,10 +108,10 @@ void PlannerNode::planPath() {
         CellIndex new_idx(x + dx, y + dy);
 
         int cell_value = current_map_.data[(y + dy) * width + (x + dx)];
-        if (cell_value > 10) continue;
+        // if (cell_value > 10) continue;
 
         double movement_cost = (dx == 0 || dy == 0) ? 1.0 : sqrt(2);
-        double g = g_scores[idx] + movement_cost;
+        double g = g_scores[idx] + movement_cost + cell_value * COST_WEIGHTING;
         
         if (g_scores.find(new_idx) == g_scores.end() || g < g_scores[new_idx]) {
           g_scores[new_idx] = g;

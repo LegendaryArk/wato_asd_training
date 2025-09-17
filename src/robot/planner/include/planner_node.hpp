@@ -70,6 +70,7 @@ class PlannerNode : public rclcpp::Node {
 
     static constexpr int PATH_TIMEOUT = 500;
     static constexpr double SETTLE_RADIUS = 0.5;
+    static constexpr double COST_WEIGHTING = 0.1;
 
     void mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
     void goalCallback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
