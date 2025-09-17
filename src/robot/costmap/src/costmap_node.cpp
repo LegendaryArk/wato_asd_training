@@ -13,7 +13,7 @@ void CostmapNode::lidarCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg
   constexpr int WIDTH = 300, HEIGHT = 300;
   constexpr double RES = 0.1;
   constexpr int8_t MAX_COST = 100;
-  constexpr double INFLATION_RADIUS = 1.0;
+  constexpr double INFLATION_RADIUS = 1.5;
 
   std::vector<std::vector<int8_t>> costmap(WIDTH, std::vector<int8_t>(HEIGHT, 0));
 

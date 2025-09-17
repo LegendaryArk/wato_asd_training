@@ -78,13 +78,11 @@ void PlannerNode::planPath() {
   std::unordered_map<CellIndex, double, CellIndexHash> g_scores;
 
   if (init_x < 0 || init_x >= width || init_y < 0 || init_y >= height) {
-    RCLCPP_WARN(this->get_logger(), "Robot position is outside map bounds: grid(%d, %d), map size(%d, %d)", 
-                init_x, init_y, width, height);
+    RCLCPP_WARN(this->get_logger(), "Robot position is outside map bounds: grid(%d, %d), map size(%d, %d)", init_x, init_y, width, height);
     return;
   }
   if (goal_x < 0 || goal_x >= width || goal_y < 0 || goal_y >= height) {
-    RCLCPP_WARN(this->get_logger(), "Goal position is outside map bounds: grid(%d, %d), map size(%d, %d)", 
-                goal_x, goal_y, width, height);
+    RCLCPP_WARN(this->get_logger(), "Goal position is outside map bounds: grid(%d, %d), map size(%d, %d)", goal_x, goal_y, width, height);
     return;
   }
 
@@ -111,7 +109,7 @@ void PlannerNode::planPath() {
         CellIndex new_idx(x + dx, y + dy);
 
         int cell_value = current_map_.data[(y + dy) * width + (x + dx)];
-        if (cell_value > 50) continue;
+        if (cell_value > 10) continue;
 
         double movement_cost = (dx == 0 || dy == 0) ? 1.0 : sqrt(2);
         double g = g_scores[idx] + movement_cost;
