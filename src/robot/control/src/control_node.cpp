@@ -21,6 +21,7 @@ void ControlNode::controlLoop() {
     cmd_pub_->publish(geometry_msgs::msg::Twist());
     return;
   }
+  
   auto lookahead_point = findLookaheadPoint();
   if (dist < ld_) {
     lookahead_point = current_path_->poses.back();
